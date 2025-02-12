@@ -1,7 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const { info } = require('console');
 const prisma = new PrismaClient();
 
 dotenv.config();
@@ -79,6 +78,21 @@ module.exports = {
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
-        }
+        },
+        list : async (req, res) => {
+            try {
+                const users = await prisma.user.findMany({
+                    orderBy: {
+                        id: 'desc'
+                    },
+                    where : {
+                        status : 'active'
+                    }
+                });
+                res.json(users);
+            } catch (error) {
+                res.status(500).json({ error: error.message });
+            }
+        },
     }
 }
