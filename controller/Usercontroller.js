@@ -94,5 +94,60 @@ module.exports = {
                 res.status(500).json({ error: error.message });
             }
         },
+        create : async (req, res) => {
+            try {
+                await prisma.user.create({
+                    data: {
+                        name: req.body.name,
+                        username: req.body.username,
+                        password: req.body.password,
+                        level: req.body.level,
+                    }
+                });
+                res.json({ message: "success" });
+            } catch (error) {
+                res.status(500).json({ error: error.message });
+            }
+        },
+        updateUser : async (req, res) => {
+            try {
+                const oldPassword = await prisma.user.findFirst({
+                    where: {
+                        id: req.params.id
+                    }
+                })
+                const newPassword = req.body.password !== "" ? req.body.password : oldPassword.password;
+
+                await prisma.user.update({
+                    where: {
+                        id: req.params.id
+                    },
+                    data: {
+                        name: req.body.name,
+                        username: req.body.username,
+                        password: newPassword,
+                        level: req.body.level
+                    }
+                });
+                res.json({ message: "success" });
+            } catch (error) {
+                res.status(500).json({ error: error.message });
+            }
+        },
+        remove : async (req, res) => {
+            try {
+                await prisma.user.update({
+                    where: {
+                        id: req.params.id
+                    },
+                    data: {
+                        status: 'inactive'
+                    }
+                });
+                res.json({ message: "success" });
+            } catch (error) {
+                res.status(500).json({ error: error.message });
+            }
+        }
     }
 }
